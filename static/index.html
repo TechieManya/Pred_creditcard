@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fraud Detection | Enterprise Risk Intelligence Engine</title>
+    <title>Fraud Detection</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -887,18 +887,17 @@
     <header class="top-navbar">
         <div class="navbar-content">
             <div class="brand-badge">
-                <div class="brand-icon">🛡️</div>
+                <div class="brand-icon">FD</div>
                 <div>
                     <div class="brand-title">
-                        SENTINEL RISK RADAR
-                        <span class="brand-tag">Production</span>
+                        Fraud Detection
                     </div>
-                    <div class="brand-sub">Enterprise Real-Time Transaction Fraud Defense • CSL236 ML Pipeline</div>
+                    <div class="brand-sub">Transaction Risk Analysis</div>
                 </div>
             </div>
             <div class="engine-status">
                 <div class="status-dot"></div>
-                <span>LightGBM Engine Active (ROC-AUC: 0.9441)</span>
+                <span>Model Active</span>
             </div>
         </div>
     </header>
@@ -908,20 +907,20 @@
         <!-- Quick Scenario Presets Strip -->
         <section class="preset-strip">
             <div class="preset-label">
-                <span>⚡ Quick Test Scenarios:</span>
+                <span>Quick Test Scenarios:</span>
             </div>
             <div class="preset-buttons">
                 <button type="button" class="preset-btn btn-legit" onclick="loadPreset('legit')">
-                    🟢 Normal Transaction (Low Risk)
+                    Normal Transaction (Low Risk)
                 </button>
                 <button type="button" class="preset-btn btn-fraud" onclick="loadPreset('fraud')">
-                    🔴 High-Risk Anomaly (Fraud Alert)
+                    High-Risk Anomaly (Fraud Alert)
                 </button>
                 <button type="button" class="preset-btn" onclick="loadPreset('night')">
-                    🟡 Suspicious Night Txn (Medium Risk)
+                    Suspicious Night Txn (Medium Risk)
                 </button>
                 <button type="button" class="preset-btn" onclick="resetForm()">
-                    🔄 Reset Form
+                    Reset Form
                 </button>
             </div>
         </section>
@@ -1236,7 +1235,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    🌍 Foreign Transaction
+                                    Foreign Transaction
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">Card charged in an international currency or terminal outside cardholder's registered country.</span>
                                     </span>
@@ -1256,7 +1255,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    🏪 First-Time Merchant
+                                    First-Time Merchant
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">Customer has zero previous transactions with this merchant MID in historical records.</span>
                                     </span>
@@ -1276,7 +1275,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    🔒 VPN / Proxy Tunnel
+                                    VPN / Proxy Tunnel
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">IP telemetry indicates Tor exit node, commercial VPN, or data center proxy obfuscating connection origin.</span>
                                     </span>
@@ -1296,7 +1295,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    📍 IP Country Mismatch
+                                    IP Country Mismatch
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">Device IP geographic location does not match the cardholder's verified billing country.</span>
                                     </span>
@@ -1316,7 +1315,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    📦 Billing / Shipping Mismatch
+                                    Billing / Shipping Mismatch
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">Physical shipping destination address differs from cardholder AVS billing records (reshipping fraud signal).</span>
                                     </span>
@@ -1336,7 +1335,7 @@
                         <div class="toggle-card">
                             <div class="toggle-info">
                                 <span class="toggle-title">
-                                    🤖 AI / Bot Scam Pattern
+                                    AI / Bot Scam Pattern
                                     <span class="tooltip-trigger">ⓘ
                                         <span class="tooltip-content">Synthetic identity patterns or automated script signatures detected by threat intelligence feed.</span>
                                     </span>
@@ -1357,10 +1356,10 @@
                 <!-- Submit Action Strip -->
                 <div class="action-strip">
                     <button type="submit" id="btnSubmit" class="btn-predict">
-                        <span id="btnIcon">⚡</span>
+                        <span id="btnIcon">&#9654;</span>
                         <span id="btnText">Predict Fraud Risk</span>
                     </button>
-                    <span class="btn-hint">Runs real-time inference on the 24 attributes via trained LightGBM pipeline</span>
+                    <span class="btn-hint">Runs real-time inference on the 24 input attributes</span>
                 </div>
             </div>
         </form>
@@ -1384,7 +1383,7 @@
             <!-- Top Metric Verdict Card -->
             <div class="results-top-bar">
                 <div class="risk-badge-box">
-                    <div class="risk-avatar" id="riskAvatar">🛡️</div>
+                    <div class="risk-avatar" id="riskAvatar">--</div>
                     <div>
                         <div class="risk-verdict-title">Model Classification</div>
                         <div class="risk-verdict-value" id="riskLevelText">LOW RISK</div>
@@ -1412,7 +1411,7 @@
             <!-- Explanatory Warnings Card -->
             <div class="tips-container">
                 <div class="tips-heading">
-                    <span>⚠️ Diagnostic Risk Signals & Recommendations</span>
+                    <span>Diagnostic Risk Signals & Recommendations</span>
                 </div>
                 <ul class="tips-list" id="tipsList">
                     <!-- Populated dynamically -->
@@ -1422,7 +1421,7 @@
             <!-- Automatic Backend Engineered Features Transparency Card -->
             <div class="auto-features-box">
                 <div class="auto-features-title">
-                    <span>⚙️ Backend Auto-Engineered Features (Calculated on server):</span>
+                    <span>Backend Auto-Engineered Features (Calculated on server):</span>
                 </div>
                 <div class="auto-features-grid" id="autoFeaturesGrid">
                     <div class="auto-feat-item">
@@ -1608,7 +1607,7 @@
 
             document.getElementById('feat_total_spend').textContent = '$' + totalSpending.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('feat_ratio').textContent = spendRatio.toFixed(4);
-            document.getElementById('feat_night').textContent = isNight ? '1 (Night 🚨)' : '0 (Day)';
+            document.getElementById('feat_night').textContent = isNight ? '1 (Night)' : '0 (Day)';
             document.getElementById('feat_risk_sum').textContent = riskSum + ' / 6';
             document.getElementById('feat_cvv_velocity').textContent = cvvVelocity.toFixed(1);
 
@@ -1620,8 +1619,8 @@
             const resSection = document.getElementById('resultsSection');
 
             btn.disabled = true;
-            btnIcon.textContent = '⏳';
-            btnText.textContent = 'Evaluating Risk with LightGBM...';
+            btnIcon.textContent = '...';
+            btnText.textContent = 'Evaluating...';
             errBox.style.display = 'none';
 
             const startTime = performance.now();
@@ -1644,7 +1643,7 @@
                     } else {
                         errMsg += JSON.stringify(err);
                     }
-                    errBox.textContent = '❌ ' + errMsg;
+                    errBox.textContent = 'Error: ' + errMsg;
                     errBox.style.display = 'block';
                     return;
                 }
@@ -1657,21 +1656,21 @@
 
                 // Set styles according to risk tier
                 resSection.className = 'results-section';
-                let avatar = '🛡️';
+                let avatar = '--';
                 let verdictText = 'LOW RISK';
 
                 if (result.risk_level === 'HIGH') {
                     resSection.classList.add('result-high', 'badge-high');
-                    avatar = '🚨';
-                    verdictText = 'HIGH RISK (BLOCKED)';
+                    avatar = 'HIGH';
+                    verdictText = 'HIGH RISK';
                 } else if (result.risk_level === 'MEDIUM') {
                     resSection.classList.add('result-med', 'badge-med');
-                    avatar = '⚠️';
-                    verdictText = 'MEDIUM RISK (REVIEW)';
+                    avatar = 'MED';
+                    verdictText = 'MEDIUM RISK';
                 } else {
                     resSection.classList.add('result-low', 'badge-low');
-                    avatar = '✅';
-                    verdictText = 'LOW RISK (APPROVED)';
+                    avatar = 'LOW';
+                    verdictText = 'LOW RISK';
                 }
 
                 document.getElementById('riskAvatar').textContent = avatar;
@@ -1699,11 +1698,11 @@
                 resSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             } catch (err) {
-                errBox.textContent = '❌ Network Error: ' + err.message;
+                errBox.textContent = 'Network Error: ' + err.message;
                 errBox.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnIcon.textContent = '⚡';
+                btnIcon.textContent = '\u25B6';
                 btnText.textContent = 'Predict Fraud Risk';
             }
         });

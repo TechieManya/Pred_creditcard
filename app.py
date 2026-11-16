@@ -16,8 +16,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 
 # ── Logging setup ──────────────────────────────────────────────────────────────
+logging.basicConfig(level=logging.WARNING)  # Suppress HTTP request logs from root
 logger = logging.getLogger("fraud_predictor")
 logger.setLevel(logging.INFO)
+_pred_handler = logging.FileHandler("prediction_log.jsonl", encoding="utf-8")
+_pred_handler.setFormatter(logging.Formatter("%(message)s"))
+logger.addHandler(_pred_handler)
+logger.propagate = False
 
 # ── Load model and artifacts at startup (not per request) ──────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -160,23 +165,23 @@ def generate_tips(data: TransactionInput, prob: float) -> list[str]:
     """Generate 2-3 rule-based tips for the user."""
     tips = []
     if prob > 0.5:
-        tips.append("🚨 HIGH RISK: This transaction has a high fraud probability. Consider blocking it.")
+        tips.append("HIGH RISK: This transaction has a high fraud probability. Consider blocking it.")
     if data.cvv_retry_count >= 3:
-        tips.append("⚠️ Multiple CVV retries detected — this is a common fraud pattern.")
+        tips.append("Multiple CVV retries detected - this is a common fraud pattern.")
     if data.used_vpn:
-        tips.append("🔒 VPN usage detected. Verify the customer's identity before approving.")
+        tips.append("VPN usage detected. Verify the customer's identity before approving.")
     if data.ip_country_mismatch:
-        tips.append("🌍 IP country does not match billing country — elevated risk.")
+        tips.append("IP country does not match billing country - elevated risk.")
     if data.billing_shipping_mismatch:
-        tips.append("📦 Billing and shipping addresses differ — watch for reshipping fraud.")
+        tips.append("Billing and shipping addresses differ - watch for reshipping fraud.")
     if data.is_ai_generated_scam_attempt:
-        tips.append("🤖 AI-generated scam attempt flagged — treat with extreme caution.")
+        tips.append("AI-generated scam attempt flagged - treat with extreme caution.")
     if data.amount_usd > 5000:
-        tips.append("💰 Large transaction amount — ensure the customer profile supports this.")
+        tips.append("Large transaction amount - ensure the customer profile supports this.")
     if data.time_of_day_hour < 6 or data.time_of_day_hour >= 22:
-        tips.append("🌙 Transaction at unusual hour — nighttime fraud rates are elevated.")
-    if prob <= 0.1:
-        tips.append("✅ Low risk transaction. Standard processing recommended.")
+        tips.append("Transaction at unusual hour - nighttime fraud rates are elevated.")
+    if prob <= 0.5 and not tips:
+        tips.append("Low risk transaction. Standard processing recommended.")
 
     return tips[:3]  # Return at most 3 tips
 
@@ -192,7 +197,7 @@ def predict(data: TransactionInput):
     X = preprocess_input(data)
     prob = float(model.predict_proba(X)[0, 1])
     is_fraud = prob >= 0.5
-    risk_level = "HIGH" if prob > 0.7 else "MEDIUM" if prob > 0.3 else "LOW"
+    risk_level = "HIGH" if prob >= 0.5 else "MEDIUM" if prob >= 0.3 else "LOW"
     tips = generate_tips(data, prob)
 
     # Log prediction

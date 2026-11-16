@@ -22,7 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Train baseline model
-        run: python train.py --algorithm gradient_boosting --n_estimators 50 --max_depth 3
+        run: python train.py --algorithm gradient_boosting --n_estimators 50 --max_depth 3 --sample_size 5000
 
       - name: Run tests
         run: pytest tests/ -v
