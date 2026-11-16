@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraud Detection | Enterprise Risk Intelligence Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #0f172a;
+            --bg-card: #151f32;
+            --bg-card-hover: #1c283f;
+            --bg-input: #0b1322;
+            --border-subtle: #24324a;
+            --border-focus: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #2563eb;
+            --accent-indigo: #6366f1;
+            --risk-low: #10b981;
+            --risk-low-bg: rgba(16, 185, 129, 0.12);
+            --risk-low-border: rgba(16, 185, 129, 0.35);
+            --risk-med: #f59e0b;
+            --risk-med-bg: rgba(245, 158, 11, 0.12);
+            --risk-med-border: rgba(245, 158, 11, 0.35);
+            --risk-high: #ef4444;
+            --risk-high-bg: rgba(239, 68, 68, 0.14);
+            --risk-high-border: rgba(239, 68, 68, 0.4);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.15);
+            --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            background-image:
+                radial-gradient(at 10% 10%, rgba(56, 189, 248, 0.08) 0px, transparent 40%),
+                radial-gradient(at 90% 90%, rgba(99, 102, 241, 0.08) 0px, transparent 40%);
+            background-attachment: fixed;
+            padding-bottom: 4rem;
+        }
+
+        /* Top Navigation Bar */
+        .top-navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #0284c7, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 9999px;
+            letter-spacing: 0.05em;
+        }
+
+        .brand-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .engine-status {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Main Container */
+        .app-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Preset Ribbon */
+        .preset-strip {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .preset-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent-cyan);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+        }
+
+        .preset-btn.btn-legit:hover {
+            border-color: var(--risk-low);
+            color: #34d399;
+        }
+
+        .preset-btn.btn-fraud:hover {
+            border-color: var(--risk-high);
+            color: #f87171;
+        }
+
+        /* Layout Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .section-card:hover::before {
+            opacity: 1;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .section-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+        }
+
+        .section-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .feature-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Inputs Grid */
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .label-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* Tooltip styling */
+        .tooltip-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: help;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .tooltip-trigger:hover {
+            background: var(--accent-cyan);
+            color: #0b1322;
+        }
+
+        .tooltip-trigger .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            width: 230px;
+            background: #1e293b;
+            color: #e2e8f0;
+            text-align: left;
+            border-radius: var(--radius-sm);
+            padding: 0.6rem 0.75rem;
+            position: absolute;
+            z-index: 100;
+            bottom: 135%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            font-size: 0.75rem;
+            font-weight: 500;
+            line-height: 1.35;
+            text-transform: none;
+            letter-spacing: normal;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .tooltip-trigger .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .tooltip-trigger:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Inputs and Selects */
+        .input-addon-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-addon-icon {
+            position: absolute;
+            left: 0.85rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 0.68rem 0.85rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 500;
+            transition: var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .input-addon-group input {
+            padding-left: 2rem;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.85rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+            background: #111a2e;
+        }
+
+        select option {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        /* Toggle Switches */
+        .toggles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .toggle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.9rem 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+
+        .toggle-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            background: var(--bg-card-hover);
+        }
+
+        .toggle-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .toggle-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .toggle-desc {
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+
+        /* Switch UI */
+        .switch-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .switch-state-text {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+            width: 28px;
+            text-align: right;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            transition: var(--transition);
+            border-radius: 24px;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #94a3b8;
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            border-color: #ef4444;
+        }
+
+        input:checked + .slider::before {
+            transform: translateX(22px);
+            background-color: #ffffff;
+        }
+
+        /* Submit Action Container */
+        .action-strip {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .btn-predict {
+            width: 100%;
+            max-width: 480px;
+            padding: 1.15rem 2rem;
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #6366f1 100%);
+            border: none;
+            border-radius: var(--radius-lg);
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4), 0 0 15px rgba(56, 189, 248, 0.2);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.55), 0 0 25px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-predict:active {
+            transform: translateY(1px);
+        }
+
+        .btn-predict:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-hint {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        /* Results Section (Section 4) */
+        .results-section {
+            display: none;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            margin-top: 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-low {
+            border-color: var(--risk-low-border);
+            background: linear-gradient(180deg, var(--risk-low-bg) 0%, var(--bg-surface) 100%);
+        }
+
+        .result-med {
+            border-color: var(--risk-med-border);
+            background: linear-gradient(180deg, var(--risk-med-bg) 0%, var(--bg-surface) 100%);
+        }
+
+        .result-high {
+            border-color: var(--risk-high-border);
+            background: linear-gradient(180deg, var(--risk-high-bg) 0%, var(--bg-surface) 100%);
+        }
+
+        .results-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .risk-badge-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .risk-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .badge-low .risk-avatar { background: rgba(16, 185, 129, 0.2); }
+        .badge-med .risk-avatar { background: rgba(245, 158, 11, 0.2); }
+        .badge-high .risk-avatar { background: rgba(239, 68, 68, 0.2); }
+
+        .risk-verdict-title {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .risk-verdict-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .badge-low .risk-verdict-value { color: #34d399; }
+        .badge-med .risk-verdict-value { color: #fbbf24; }
+        .badge-high .risk-verdict-value { color: #f87171; }
+
+        .prob-metric-card {
+            text-align: right;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .prob-metric-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+        }
+
+        .prob-metric-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Gauge bar */
+        .gauge-wrap {
+            margin: 1.5rem 0;
+        }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .gauge-track {
+            height: 10px;
+            background: #1e293b;
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gauge-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 9999px;
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .badge-low .gauge-fill { background: linear-gradient(90deg, #10b981, #34d399); }
+        .badge-med .gauge-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .badge-high .gauge-fill { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+        /* Explanatory Warnings Card */
+        .tips-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .tips-heading {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .tips-list li {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--border-subtle);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            color: #e2e8f0;
+        }
+
+        .badge-low .tips-list li { border-left-color: var(--risk-low); }
+        .badge-med .tips-list li { border-left-color: var(--risk-med); }
+        .badge-high .tips-list li { border-left-color: var(--risk-high); }
+
+        /* Backend auto features display */
+        .auto-features-box {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background: rgba(56, 189, 248, 0.04);
+            border: 1px dashed rgba(56, 189, 248, 0.25);
+            border-radius: var(--radius-md);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .auto-features-title {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .auto-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .auto-feat-item {
+            background: rgba(11, 19, 34, 0.7);
+            padding: 0.4rem 0.6rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .auto-feat-label {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .auto-feat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 0.8rem;
+        }
+
+        /* Error notification */
+        .error-banner {
+            display: none;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            margin-top: 1.5rem;
+            font-size: 0.88rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .preset-strip {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .fields-grid {
+                grid-template-columns: 1fr;
+            }
+            .toggles-grid {
+                grid-template-columns: 1fr;
+            }
+            .results-top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .prob-metric-card {
+                text-align: left;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <header class="top-navbar">
+        <div class="navbar-content">
+            <div class="brand-badge">
+                <div class="brand-icon">🛡️</div>
+                <div>
+                    <div class="brand-title">
+                        SENTINEL RISK RADAR
+                        <span class="brand-tag">Production</span>
+                    </div>
+                    <div class="brand-sub">Enterprise Real-Time Transaction Fraud Defense • CSL236 ML Pipeline</div>
+                </div>
+            </div>
+            <div class="engine-status">
+                <div class="status-dot"></div>
+                <span>LightGBM Engine Active (ROC-AUC: 0.9441)</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+
+        <!-- Quick Scenario Presets Strip -->
+        <section class="preset-strip">
+            <div class="preset-label">
+                <span>⚡ Quick Test Scenarios:</span>
+            </div>
+            <div class="preset-buttons">
+                <button type="button" class="preset-btn btn-legit" onclick="loadPreset('legit')">
+                    🟢 Normal Transaction (Low Risk)
+                </button>
+                <button type="button" class="preset-btn btn-fraud" onclick="loadPreset('fraud')">
+                    🔴 High-Risk Anomaly (Fraud Alert)
+                </button>
+                <button type="button" class="preset-btn" onclick="loadPreset('night')">
+                    🟡 Suspicious Night Txn (Medium Risk)
+                </button>
+                <button type="button" class="preset-btn" onclick="resetForm()">
+                    🔄 Reset Form
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Form with 3 Input Sections -->
+        <form id="predForm">
+            <div class="dashboard-grid">
+
+                <!-- SECTION 1: Transaction Details -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title-wrap">
+                            <div class="section-number">1</div>
+                            <div>
+                                <h2 class="section-title">Transaction Details</h2>
+                                <p class="section-desc">Core financial amounts, merchant categorization, and temporal timestamps</p>
+                            </div>
+                        </div>
+                        <span class="feature-badge">8 Attributes</span>
+                    </div>
+
+                    <div class="fields-grid">
+                        <!-- Amount USD -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="amount_usd">Amount (USD)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Transaction value in US Dollars. High values relative to account balance trigger anomaly heuristics.</span>
+                                </span>
+                            </div>
+                            <div class="input-addon-group">
+                                <span class="input-addon-icon">$</span>
+                                <input type="number" step="0.01" min="0" max="100000" id="amount_usd" name="amount_usd" value="150.00" required>
+                            </div>
+                        </div>
+
+                        <!-- Merchant Category -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="merchant_category">Merchant Category</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Business sector of merchant. Higher fraud prevalence is historically logged in Crypto, Gaming, and Gift Cards.</span>
+                                </span>
+                            </div>
+                            <select id="merchant_category" name="merchant_category" required>
+                                <option value="Groceries" selected>Groceries</option>
+                                <option value="Online Retail">Online Retail</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Restaurants">Restaurants</option>
+                                <option value="Fuel">Fuel</option>
+                                <option value="Streaming">Streaming</option>
+                                <option value="Crypto Exchange">Crypto Exchange</option>
+                                <option value="Gaming">Gaming</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Gift Cards">Gift Cards</option>
+                            </select>
+                        </div>
+
+                        <!-- Merchant Risk Score -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="merchant_risk_score">Merchant Risk Score (0-100)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Historical fraud probability score assigned to the merchant terminal (0 = fully trustworthy, 100 = frequent fraud reports).</span>
+                                </span>
+                            </div>
+                            <input type="number" step="0.1" min="0" max="100" id="merchant_risk_score" name="merchant_risk_score" value="15.0" required>
+                        </div>
+
+                        <!-- Distance From Home -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="distance_from_home_km">Distance from Home (km)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Calculated distance between customer residential address and physical POS terminal location.</span>
+                                </span>
+                            </div>
+                            <input type="number" step="0.1" min="0" max="50000" id="distance_from_home_km" name="distance_from_home_km" value="15.0" required>
+                        </div>
+
+                        <!-- Hour of Day -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="time_of_day_hour">Hour of Day (0–23)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Transaction timestamp hour (24-hour clock). Hours between 22:00 and 06:00 represent late-night risk windows.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="23" id="time_of_day_hour" name="time_of_day_hour" value="14" required>
+                        </div>
+
+                        <!-- Day of Week -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="day_of_week">Day of Week</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Day of the week of charge initiation (0 = Monday, 6 = Sunday).</span>
+                                </span>
+                            </div>
+                            <select id="day_of_week" name="day_of_week" required>
+                                <option value="0">Monday (0)</option>
+                                <option value="1">Tuesday (1)</option>
+                                <option value="2" selected>Wednesday (2)</option>
+                                <option value="3">Thursday (3)</option>
+                                <option value="4">Friday (4)</option>
+                                <option value="5">Saturday (5)</option>
+                                <option value="6">Sunday (6)</option>
+                            </select>
+                        </div>
+
+                        <!-- Hours Since Last Txn -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="hours_since_last_txn">Hours Since Last Txn</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Time elapsed since the cardholder's immediately preceding transaction. Extremely small values indicate rapid automated bursts.</span>
+                                </span>
+                            </div>
+                            <input type="number" step="0.1" min="0" max="10000" id="hours_since_last_txn" name="hours_since_last_txn" value="12.5" required>
+                        </div>
+
+                        <!-- 24h Transaction Count -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="txn_count_last_24h">24h Transaction Count</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Total count of successful and attempted charges on this account within the last 24 hours.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="500" id="txn_count_last_24h" name="txn_count_last_24h" value="3" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: Payment & Account Information -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title-wrap">
+                            <div class="section-number">2</div>
+                            <div>
+                                <h2 class="section-title">Payment & Account Information</h2>
+                                <p class="section-desc">Card network, customer profile age, channel terminal, and account liquidity</p>
+                            </div>
+                        </div>
+                        <span class="feature-badge">8 Attributes</span>
+                    </div>
+
+                    <div class="fields-grid">
+                        <!-- Card Type -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="card_type">Card Network</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Payment network protocol (Visa, Mastercard, Amex, RuPay, Discover).</span>
+                                </span>
+                            </div>
+                            <select id="card_type" name="card_type" required>
+                                <option value="Visa" selected>Visa</option>
+                                <option value="Mastercard">Mastercard</option>
+                                <option value="Amex">Amex</option>
+                                <option value="RuPay">RuPay</option>
+                                <option value="Discover">Discover</option>
+                            </select>
+                        </div>
+
+                        <!-- Auth Method -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="auth_method">Authentication Method</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Identity verification protocol used for this checkout. 'No Authentication' presents highest risk factor.</span>
+                                </span>
+                            </div>
+                            <select id="auth_method" name="auth_method" required>
+                                <option value="OTP" selected>OTP (One-Time Password)</option>
+                                <option value="PIN">PIN</option>
+                                <option value="3D Secure">3D Secure v2</option>
+                                <option value="Biometric">Biometric (Face/Touch ID)</option>
+                                <option value="No Authentication">No Authentication</option>
+                            </select>
+                        </div>
+
+                        <!-- Channel -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="channel">Payment Channel</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Processing channel terminal (POS, In-App, Online, ATM, Contactless).</span>
+                                </span>
+                            </div>
+                            <select id="channel" name="channel" required>
+                                <option value="POS" selected>POS (Physical Terminal)</option>
+                                <option value="In-App">In-App Mobile</option>
+                                <option value="Online">Online / E-Commerce</option>
+                                <option value="ATM">ATM Withdrawal</option>
+                                <option value="Contactless">Contactless NFC</option>
+                            </select>
+                        </div>
+
+                        <!-- Device Type -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="device_type">Device Hardware</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Client operating environment detected by fraud telemetry SDK.</span>
+                                </span>
+                            </div>
+                            <select id="device_type" name="device_type" required>
+                                <option value="iPhone" selected>Apple iPhone</option>
+                                <option value="Android Phone">Android Smartphone</option>
+                                <option value="Tablet">Tablet</option>
+                                <option value="Windows PC">Windows PC</option>
+                                <option value="Mac">Apple Mac</option>
+                                <option value="POS Terminal">Merchant POS Terminal</option>
+                                <option value="ATM Machine">ATM Terminal</option>
+                                <option value="Smart Watch">Smart Watch</option>
+                            </select>
+                        </div>
+
+                        <!-- Account Balance -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="account_balance_usd">Account Balance (USD)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Total verified available funds in the customer's linked balance account.</span>
+                                </span>
+                            </div>
+                            <div class="input-addon-group">
+                                <span class="input-addon-icon">$</span>
+                                <input type="number" step="0.01" min="0" max="10000000" id="account_balance_usd" name="account_balance_usd" value="5000.00" required>
+                            </div>
+                        </div>
+
+                        <!-- Customer Age -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="customer_age">Customer Age (Years)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Cardholder demographic age in years.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="120" id="customer_age" name="customer_age" value="35" required>
+                        </div>
+
+                        <!-- Card Age Months -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="card_age_months">Card Account Age (Months)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Months elapsed since this card was issued. Brand new cards (< 3 months) present higher bust-out fraud risk.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="1200" id="card_age_months" name="card_age_months" value="36" required>
+                        </div>
+
+                        <!-- Prior Disputes -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="prior_disputes">Prior Disputes Logged</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Number of historical chargebacks or dispute claims filed on this account.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="100" id="prior_disputes" name="prior_disputes" value="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: Security & Risk Indicators -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title-wrap">
+                            <div class="section-number">3</div>
+                            <div>
+                                <h2 class="section-title">Security & Risk Indicators</h2>
+                                <p class="section-desc">Velocity scores, CVV challenge attempts, network proxies, and location mismatches</p>
+                            </div>
+                        </div>
+                        <span class="feature-badge">8 Attributes (2 Scores + 6 Flags)</span>
+                    </div>
+
+                    <!-- Continuous Security Metrics -->
+                    <div class="fields-grid" style="margin-bottom: 1.5rem;">
+                        <!-- Velocity Score -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="velocity_score">Velocity Score (0-100)</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Rate of repeated requests measured against behavioral baseline. Scores above 70 indicate rapid automated bursts.</span>
+                                </span>
+                            </div>
+                            <input type="number" step="0.1" min="0" max="100" id="velocity_score" name="velocity_score" value="2.5" required>
+                        </div>
+
+                        <!-- CVV Retry Count -->
+                        <div class="form-group">
+                            <div class="label-wrap">
+                                <label for="cvv_retry_count">CVV Retry Count</label>
+                                <span class="tooltip-trigger">ⓘ
+                                    <span class="tooltip-content">Number of incorrect CVV security code attempts entered during authentication. Multiple retries strongly signal stolen card testing.</span>
+                                </span>
+                            </div>
+                            <input type="number" min="0" max="20" id="cvv_retry_count" name="cvv_retry_count" value="0" required>
+                        </div>
+                    </div>
+
+                    <!-- 6 Boolean Security Flags with Yes/No Toggle Switches -->
+                    <div class="toggles-grid">
+                        <!-- Foreign Transaction -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    🌍 Foreign Transaction
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">Card charged in an international currency or terminal outside cardholder's registered country.</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">Cross-border merchant settlement</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_is_foreign_transaction">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="is_foreign_transaction" name="is_foreign_transaction" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- New Merchant -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    🏪 First-Time Merchant
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">Customer has zero previous transactions with this merchant MID in historical records.</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">Unestablished merchant relationship</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_is_new_merchant">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="is_new_merchant" name="is_new_merchant" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- VPN Used -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    🔒 VPN / Proxy Tunnel
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">IP telemetry indicates Tor exit node, commercial VPN, or data center proxy obfuscating connection origin.</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">Obfuscated client network IP</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_used_vpn">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="used_vpn" name="used_vpn" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- IP Country Mismatch -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    📍 IP Country Mismatch
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">Device IP geographic location does not match the cardholder's verified billing country.</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">IP geo differs from billing profile</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_ip_country_mismatch">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="ip_country_mismatch" name="ip_country_mismatch" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Billing / Shipping Mismatch -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    📦 Billing / Shipping Mismatch
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">Physical shipping destination address differs from cardholder AVS billing records (reshipping fraud signal).</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">Physical delivery address discrepancy</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_billing_shipping_mismatch">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="billing_shipping_mismatch" name="billing_shipping_mismatch" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- AI Scam Attempt -->
+                        <div class="toggle-card">
+                            <div class="toggle-info">
+                                <span class="toggle-title">
+                                    🤖 AI / Bot Scam Pattern
+                                    <span class="tooltip-trigger">ⓘ
+                                        <span class="tooltip-content">Synthetic identity patterns or automated script signatures detected by threat intelligence feed.</span>
+                                    </span>
+                                </span>
+                                <span class="toggle-desc">Synthetic bot payload flagged</span>
+                            </div>
+                            <div class="switch-wrap">
+                                <span class="switch-state-text" id="label_is_ai_generated_scam_attempt">NO</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="is_ai_generated_scam_attempt" name="is_ai_generated_scam_attempt" onchange="updateSwitchLabel(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Action Strip -->
+                <div class="action-strip">
+                    <button type="submit" id="btnSubmit" class="btn-predict">
+                        <span id="btnIcon">⚡</span>
+                        <span id="btnText">Predict Fraud Risk</span>
+                    </button>
+                    <span class="btn-hint">Runs real-time inference on the 24 attributes via trained LightGBM pipeline</span>
+                </div>
+            </div>
+        </form>
+
+        <!-- Error Notification Banner -->
+        <div class="error-banner" id="errorBox"></div>
+
+        <!-- SECTION 4: Fraud Prediction & Risk Intelligence (Dedicated Results Card) -->
+        <section class="results-section" id="resultsSection">
+            <div class="section-header" style="border-bottom: none; margin-bottom: 0.5rem; padding-bottom: 0;">
+                <div class="section-title-wrap">
+                    <div class="section-number" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3);">4</div>
+                    <div>
+                        <h2 class="section-title">Fraud Prediction & Risk Intelligence</h2>
+                        <p class="section-desc">Multi-factor machine learning evaluation output and risk mitigation advisory</p>
+                    </div>
+                </div>
+                <span class="feature-badge" id="latencyBadge">Inference Time: ~12ms</span>
+            </div>
+
+            <!-- Top Metric Verdict Card -->
+            <div class="results-top-bar">
+                <div class="risk-badge-box">
+                    <div class="risk-avatar" id="riskAvatar">🛡️</div>
+                    <div>
+                        <div class="risk-verdict-title">Model Classification</div>
+                        <div class="risk-verdict-value" id="riskLevelText">LOW RISK</div>
+                    </div>
+                </div>
+                <div class="prob-metric-card">
+                    <div class="prob-metric-label">Fraud Probability</div>
+                    <div class="prob-metric-number" id="probNumber">0.02%</div>
+                </div>
+            </div>
+
+            <!-- Visual Probability Gauge Track -->
+            <div class="gauge-wrap">
+                <div class="gauge-labels">
+                    <span>0% (Legitimate)</span>
+                    <span>30% (Medium Threshold)</span>
+                    <span>70% (High Threshold)</span>
+                    <span>100% (Confirmed Fraud)</span>
+                </div>
+                <div class="gauge-track">
+                    <div class="gauge-fill" id="gaugeFill"></div>
+                </div>
+            </div>
+
+            <!-- Explanatory Warnings Card -->
+            <div class="tips-container">
+                <div class="tips-heading">
+                    <span>⚠️ Diagnostic Risk Signals & Recommendations</span>
+                </div>
+                <ul class="tips-list" id="tipsList">
+                    <!-- Populated dynamically -->
+                </ul>
+            </div>
+
+            <!-- Automatic Backend Engineered Features Transparency Card -->
+            <div class="auto-features-box">
+                <div class="auto-features-title">
+                    <span>⚙️ Backend Auto-Engineered Features (Calculated on server):</span>
+                </div>
+                <div class="auto-features-grid" id="autoFeaturesGrid">
+                    <div class="auto-feat-item">
+                        <div class="auto-feat-label">Total 24h Spend</div>
+                        <div class="auto-feat-val" id="feat_total_spend">$0.00</div>
+                    </div>
+                    <div class="auto-feat-item">
+                        <div class="auto-feat-label">Spend / Balance Ratio</div>
+                        <div class="auto-feat-val" id="feat_ratio">0.000</div>
+                    </div>
+                    <div class="auto-feat-item">
+                        <div class="auto-feat-label">Night Hour Flag</div>
+                        <div class="auto-feat-val" id="feat_night">0 (Day)</div>
+                    </div>
+                    <div class="auto-feat-item">
+                        <div class="auto-feat-label">Risk Flags Sum</div>
+                        <div class="auto-feat-val" id="feat_risk_sum">0 / 6</div>
+                    </div>
+                    <div class="auto-feat-item">
+                        <div class="auto-feat-label">CVV × Velocity</div>
+                        <div class="auto-feat-val" id="feat_cvv_velocity">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Update switch label text on toggle
+        function updateSwitchLabel(checkbox) {
+            const label = document.getElementById('label_' + checkbox.name);
+            if (label) {
+                label.textContent = checkbox.checked ? 'YES' : 'NO';
+                label.style.color = checkbox.checked ? '#f87171' : 'var(--text-dim)';
+            }
+        }
+
+        // Quick Scenario Presets
+        const PRESETS = {
+            legit: {
+                amount_usd: 35.00,
+                merchant_category: 'Groceries',
+                merchant_risk_score: 15.0,
+                distance_from_home_km: 3.5,
+                time_of_day_hour: 12,
+                day_of_week: 2,
+                hours_since_last_txn: 24.0,
+                txn_count_last_24h: 1,
+                card_type: 'Visa',
+                auth_method: 'OTP',
+                channel: 'POS',
+                device_type: 'iPhone',
+                account_balance_usd: 8500.00,
+                customer_age: 40,
+                card_age_months: 36,
+                prior_disputes: 0,
+                velocity_score: 1.0,
+                cvv_retry_count: 0,
+                is_foreign_transaction: false,
+                is_new_merchant: false,
+                used_vpn: false,
+                ip_country_mismatch: false,
+                billing_shipping_mismatch: false,
+                is_ai_generated_scam_attempt: false
+            },
+            fraud: {
+                amount_usd: 450.00,
+                merchant_category: 'Crypto Exchange',
+                merchant_risk_score: 95.0,
+                distance_from_home_km: 1500.0,
+                time_of_day_hour: 3,
+                day_of_week: 6,
+                hours_since_last_txn: 0.1,
+                txn_count_last_24h: 25,
+                card_type: 'Amex',
+                auth_method: 'No Authentication',
+                channel: 'Online',
+                device_type: 'Windows PC',
+                account_balance_usd: 150.00,
+                customer_age: 25,
+                card_age_months: 2,
+                prior_disputes: 2,
+                velocity_score: 85.0,
+                cvv_retry_count: 3,
+                is_foreign_transaction: true,
+                is_new_merchant: true,
+                used_vpn: true,
+                ip_country_mismatch: true,
+                billing_shipping_mismatch: true,
+                is_ai_generated_scam_attempt: true
+            },
+            night: {
+                amount_usd: 650.00,
+                merchant_category: 'Electronics',
+                merchant_risk_score: 60.0,
+                distance_from_home_km: 45.0,
+                time_of_day_hour: 23,
+                day_of_week: 5,
+                hours_since_last_txn: 1.5,
+                txn_count_last_24h: 7,
+                card_type: 'Mastercard',
+                auth_method: 'PIN',
+                channel: 'Online',
+                device_type: 'Android Phone',
+                account_balance_usd: 1200.00,
+                customer_age: 29,
+                card_age_months: 14,
+                prior_disputes: 1,
+                velocity_score: 38.0,
+                cvv_retry_count: 1,
+                is_foreign_transaction: false,
+                is_new_merchant: true,
+                used_vpn: true,
+                ip_country_mismatch: false,
+                billing_shipping_mismatch: true,
+                is_ai_generated_scam_attempt: false
+            }
+        };
+
+        function loadPreset(key) {
+            const preset = PRESETS[key];
+            if (!preset) return;
+            const form = document.getElementById('predForm');
+            for (const [k, v] of Object.entries(preset)) {
+                const el = form.querySelector(`[name="${k}"]`);
+                if (!el) continue;
+                if (el.type === 'checkbox') {
+                    el.checked = v;
+                    updateSwitchLabel(el);
+                } else {
+                    el.value = v;
+                }
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('predForm').reset();
+            document.querySelectorAll('input[type="checkbox"]').forEach(updateSwitchLabel);
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorBox').style.display = 'none';
+        }
+
+        // Form Submission
+        document.getElementById('predForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const fd = new FormData(form);
+            const data = {};
+
+            // 1. Numerics (Float)
+            ['amount_usd', 'hours_since_last_txn', 'distance_from_home_km', 'account_balance_usd',
+             'velocity_score', 'merchant_risk_score'].forEach(f => {
+                data[f] = parseFloat(fd.get(f));
+            });
+
+            // 2. Numerics (Integer)
+            ['txn_count_last_24h', 'card_age_months', 'customer_age', 'cvv_retry_count',
+             'time_of_day_hour', 'day_of_week', 'prior_disputes'].forEach(f => {
+                data[f] = parseInt(fd.get(f), 10);
+            });
+
+            // 3. Categoricals
+            ['merchant_category', 'card_type', 'auth_method', 'channel', 'device_type'].forEach(f => {
+                data[f] = fd.get(f);
+            });
+
+            // 4. Booleans (from checkbox state)
+            ['is_foreign_transaction', 'is_new_merchant', 'used_vpn', 'ip_country_mismatch',
+             'billing_shipping_mismatch', 'is_ai_generated_scam_attempt'].forEach(f => {
+                const cb = form.querySelector(`[name="${f}"]`);
+                data[f] = cb ? cb.checked : false;
+            });
+
+            // Local backend feature calculation for client-side transparency display
+            const totalSpending = data.amount_usd * data.txn_count_last_24h;
+            const spendRatio = data.amount_usd / (data.account_balance_usd + 1);
+            const isNight = (data.time_of_day_hour < 6 || data.time_of_day_hour >= 22) ? 1 : 0;
+            const riskSum = ['is_foreign_transaction', 'is_new_merchant', 'used_vpn', 'ip_country_mismatch',
+                             'billing_shipping_mismatch', 'is_ai_generated_scam_attempt']
+                             .reduce((acc, k) => acc + (data[k] ? 1 : 0), 0);
+            const cvvVelocity = data.cvv_retry_count * data.velocity_score;
+
+            document.getElementById('feat_total_spend').textContent = '$' + totalSpending.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('feat_ratio').textContent = spendRatio.toFixed(4);
+            document.getElementById('feat_night').textContent = isNight ? '1 (Night 🚨)' : '0 (Day)';
+            document.getElementById('feat_risk_sum').textContent = riskSum + ' / 6';
+            document.getElementById('feat_cvv_velocity').textContent = cvvVelocity.toFixed(1);
+
+            // UI state
+            const btn = document.getElementById('btnSubmit');
+            const btnIcon = document.getElementById('btnIcon');
+            const btnText = document.getElementById('btnText');
+            const errBox = document.getElementById('errorBox');
+            const resSection = document.getElementById('resultsSection');
+
+            btn.disabled = true;
+            btnIcon.textContent = '⏳';
+            btnText.textContent = 'Evaluating Risk with LightGBM...';
+            errBox.style.display = 'none';
+
+            const startTime = performance.now();
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const elapsed = (performance.now() - startTime).toFixed(1);
+                document.getElementById('latencyBadge').textContent = `Inference Time: ${elapsed}ms`;
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    let errMsg = 'Validation Error: ';
+                    if (err.detail && Array.isArray(err.detail)) {
+                        errMsg += err.detail.map(d => `${d.loc ? d.loc.join('.') : ''}: ${d.msg}`).join(' | ');
+                    } else {
+                        errMsg += JSON.stringify(err);
+                    }
+                    errBox.textContent = '❌ ' + errMsg;
+                    errBox.style.display = 'block';
+                    return;
+                }
+
+                const result = await res.json();
+
+                // Format probabilities
+                const probPct = (result.fraud_probability * 100).toFixed(2);
+                document.getElementById('probNumber').textContent = probPct + '%';
+
+                // Set styles according to risk tier
+                resSection.className = 'results-section';
+                let avatar = '🛡️';
+                let verdictText = 'LOW RISK';
+
+                if (result.risk_level === 'HIGH') {
+                    resSection.classList.add('result-high', 'badge-high');
+                    avatar = '🚨';
+                    verdictText = 'HIGH RISK (BLOCKED)';
+                } else if (result.risk_level === 'MEDIUM') {
+                    resSection.classList.add('result-med', 'badge-med');
+                    avatar = '⚠️';
+                    verdictText = 'MEDIUM RISK (REVIEW)';
+                } else {
+                    resSection.classList.add('result-low', 'badge-low');
+                    avatar = '✅';
+                    verdictText = 'LOW RISK (APPROVED)';
+                }
+
+                document.getElementById('riskAvatar').textContent = avatar;
+                document.getElementById('riskLevelText').textContent = verdictText;
+
+                // Animate gauge fill
+                document.getElementById('gaugeFill').style.width = Math.min(Math.max(probPct, 1.5), 100) + '%';
+
+                // Render tips
+                const tipsList = document.getElementById('tipsList');
+                tipsList.innerHTML = '';
+                if (result.tips && result.tips.length > 0) {
+                    result.tips.forEach(tip => {
+                        const li = document.createElement('li');
+                        li.textContent = tip;
+                        tipsList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'No critical anomaly flags triggered. Transaction matches expected cardholder velocity.';
+                    tipsList.appendChild(li);
+                }
+
+                resSection.style.display = 'block';
+                resSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (err) {
+                errBox.textContent = '❌ Network Error: ' + err.message;
+                errBox.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnIcon.textContent = '⚡';
+                btnText.textContent = 'Predict Fraud Risk';
+            }
+        });
+    </script>
+</body>
+</html>
