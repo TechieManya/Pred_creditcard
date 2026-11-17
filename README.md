@@ -290,11 +290,11 @@ Key Responsibilities
 
 Manya (TechieManya)
 
-Exploratory Data Analysis (EDA), data visualization and transaction pattern analysis, model performance evaluation, MLflow experiment tracking, frontend development (static/index.html), Docker containerization, automated testing using Pytest, GitHub Actions CI pipeline, and Render deployment support.
+Project architecture and repository management, exploratory data analysis (EDA), data visualization and transaction pattern analysis, dataset preprocessing, feature engineering, comparative model performance evaluation, MLflow experiment tracking, frontend development (static/index.html), Docker containerization, automated testing using Pytest, GitHub Actions CI pipeline, and Render deployment support.
 
 Krishna Singla
 
-Project architecture and repository management, dataset preparation and preprocessing, feature engineering, LightGBM model development and evaluation, FastAPI backend integration, fraud prediction logic, risk-level classification, and model integration with the application.
+Project architecture and repository management, dataset preparation and preprocessing, exploratory data analysis, feature engineering, LightGBM model development and evaluation, comparative model analysis, MLflow experiment tracking, FastAPI backend development and integration, fraud prediction logic, risk-level classification, frontend and model integration, Docker configuration, automated testing, and Render deployment.
 
 ---
 
