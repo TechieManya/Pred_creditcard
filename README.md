@@ -1,11 +1,6 @@
 # 🛡️ Sentinel Risk Radar — AI-Powered Credit Card Fraud Detection
 
-[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![LightGBM](https://img.shields.io/badge/Model-LightGBM-ff69b4)](https://lightgbm.readthedocs.io/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
-[![MLflow](https://img.shields.io/badge/Tracking-MLflow-0194E2)](https://mlflow.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
 
 **Sentinel Risk Radar** is a full-stack Machine Learning application designed to assess credit card transaction risk and identify potentially fraudulent activity. It combines LightGBM, FastAPI, and Docker to provide real-time predictions through an interactive web interface and REST API.
 
@@ -287,13 +282,19 @@ The application is containerized using Docker and deployed on Render.
 
 ---
 
-## 📜 Academic Attribution
+=👥 Team Contributions
 
-- **Project:** Sentinel Risk Radar — AI-Powered Credit Card Fraud Detection
-- **Domain:** Machine Learning and Financial Fraud Detection
-- **Algorithm:** LightGBM
-- **Author:** TechieManya
-- **License:** MIT
+Team Member
+
+Key Responsibilities
+
+Manya (TechieManya)
+
+Exploratory Data Analysis (EDA), data visualization and transaction pattern analysis, model performance evaluation, MLflow experiment tracking, frontend development (static/index.html), Docker containerization, automated testing using Pytest, GitHub Actions CI pipeline, and Render deployment support.
+
+Krishna Singla
+
+Project architecture and repository management, dataset preparation and preprocessing, feature engineering, LightGBM model development and evaluation, FastAPI backend integration, fraud prediction logic, risk-level classification, and model integration with the application.
 
 ---
 
