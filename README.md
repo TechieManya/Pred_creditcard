@@ -1,28 +1,40 @@
 # 🛡️ Sentinel Risk Radar — AI-Powered Credit Card Fraud Detection
 
-[![CI Pipeline](https://github.com/TechieManya/Pred_creditcard/actions/workflows/ci.yml/badge.svg)](https://github.com/TechieManya/Pred_creditcard/actions)
-![Python Version](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi)
-![LightGBM](https://img.shields.io/badge/Model-LightGBM-ff69b4)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)
-![MLflow](https://img.shields.io/badge/Tracking-MLflow-0194E2?logo=mlflow)
-![License](https://img.shields.io/badge/License-MIT-green)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![LightGBM](https://img.shields.io/badge/Model-LightGBM-ff69b4)](https://lightgbm.readthedocs.io/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
+[![MLflow](https://img.shields.io/badge/Tracking-MLflow-0194E2)](https://mlflow.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-A production-ready, full-stack Machine Learning web application and API that evaluates financial transactions in real time to detect fraudulent credit card activity using **LightGBM**, **FastAPI**, and containerized deployment with **Docker**.
+**Sentinel Risk Radar** is a full-stack Machine Learning application designed to assess credit card transaction risk and identify potentially fraudulent activity. It combines LightGBM, FastAPI, and Docker to provide real-time predictions through an interactive web interface and REST API.
+
+<text></text>
+
+## 🌐 Live Application
+
+**Production Deployment:** https://sentinel-risk-radar.onrender.com
+
+**API Documentation:** https://sentinel-risk-radar.onrender.com/docs
+
+**GitHub Repository:** https://github.com/TechieManya/Pred_creditcard
 
 ---
 
 ## 📌 Project Overview
 
-Credit card fraud is characterized by extreme class imbalance, low latency constraints, and evolving attack vectors. **Sentinel Risk Radar** addresses this by providing an end-to-end inference engine with:
+Credit card fraud detection is a challenging classification problem involving transaction patterns, unusual spending behaviour, and suspicious digital activity.
 
-- **24 Input Features** capturing transaction velocity, liquidity ratios, geographic anomalies, and digital footprint indicators.
-- **Dynamic Server-Side Feature Engineering** deriving 5 interaction and risk features on the fly.
-- **Probabilistic Risk Calibration** mapping predictions into 3 actionable risk tiers:
-  - 🟢 **LOW RISK (< 30%):** Standard automated clearing.
-  - 🟡 **MEDIUM RISK (30% – 70%):** Flagged for manual review or secondary 3DS challenge.
-  - 🔴 **HIGH RISK (> 70%):** Immediate decline / account block.
-- **Actionable Mitigation Advisory:** Generates context-aware security tips based on active risk triggers (e.g., CVV retries, VPN proxies, address mismatches).
+Sentinel Risk Radar provides an automated transaction risk assessment system with:
+
+- **Transaction Analysis:** Evaluates 24 transaction-related input attributes.
+- **Feature Engineering:** Derives additional features to capture transaction behaviour and potential risk indicators.
+- **Machine Learning:** Uses a LightGBM classification model to estimate fraud probability.
+- **Risk Classification:** Categorizes transactions into three risk levels:
+  - 🟢 **LOW RISK:** Below 30%
+  - 🟡 **MEDIUM RISK:** 30%–70%
+  - 🔴 **HIGH RISK:** Above 70%
+- **Security Recommendations:** Provides actionable suggestions based on detected risk indicators.
 
 ---
 
@@ -30,161 +42,211 @@ Credit card fraud is characterized by extreme class imbalance, low latency const
 
 ```mermaid
 flowchart LR
-    A[Web Client / Mobile App] -->|JSON Payload 24 Attributes| B[FastAPI Gateway]
-    B --> C[Pydantic V2 Contract Validation]
-    C --> D[Feature Engineering Pipeline]
-    D --> E[StandardScaler & Label Encoders]
-    E --> F[LightGBM Inference Engine]
-    F --> G[Calibrated Probability & Risk Tier]
-    G --> H[Heuristic Security Advisory Tips]
-    H -->|JSON Response| A
+    A[Web Interface] --> B[FastAPI Backend]
+    B --> C[Input Validation]
+    C --> D[Feature Engineering]
+    D --> E[Preprocessing]
+    E --> F[LightGBM Model]
+    F --> G[Fraud Probability]
+    G --> H[Risk Classification]
+    H --> I[Security Recommendations]
+    I --> A
 ```
 
 ---
 
 ## 🔬 Machine Learning Pipeline
 
-### 1. Feature Representation (29 Total Features)
-The model takes 24 raw inputs and calculates 5 real-time engineered signals:
+### 1. Input Features
 
-| Engineered Feature | Formulation | Domain Rationale |
-| :--- | :--- | :--- |
-| `total_spending` | amount × txn_count_last_24h | Captures rapid fund drainage bursts |
-| `spending_to_balance_ratio` | amount / (account_balance + 1) | Identifies liquidity exhaustion attempts |
-| `is_high_risk_hour` | 1 if hour < 6 or hour ≥ 22 | Night-time circadian fraud anomaly |
-| `risk_flags_sum` | sum of active boolean risk flags | Cumulative digital footprint risk |
-| `cvv_velocity_interaction` | cvv_retries × velocity_score | Bot brute-force credential stuffing |
+The application processes transaction attributes covering:
 
-### 2. Model Training & Evaluation
-Trained with **Stratified 5-Fold Cross-Validation** and tracked via **MLflow**:
+- Transaction amount and frequency
+- Account balance and card information
+- Merchant category and risk score
+- Transaction location and time
+- Authentication method
+- Device and channel information
+- VPN usage and geographic mismatches
+- Other suspicious transaction indicators
 
-- **Primary Algorithm:** LightGBM (`LGBMClassifier`)
-- **Accuracy:** `92.90%`
-- **Precision:** `98.65%`
-- **Recall:** `66.53%`
-- **F1-Score:** `0.7946`
-- **ROC-AUC (Train):** `0.9789`
-- **Cross-Validation ROC-AUC:** `0.7585 ± 0.0094`
+### 2. Feature Engineering
+
+Additional features are derived to capture behavioural patterns, transaction velocity, spending-to-balance relationships, and combined risk indicators.
+
+### 3. Model Training and Evaluation
+
+**Primary Algorithm:** LightGBM Classifier
+
+The project uses a classification pipeline with preprocessing, feature engineering, and model evaluation.
+
+| Evaluation Metric | Result |
+|---|---:|
+| Accuracy | 92.90% |
+| Precision | 98.65% |
+| Recall | 66.53% |
+| F1-Score | 0.7946 |
+| Training ROC-AUC | 0.9789 |
+| Cross-Validation ROC-AUC | 0.7585 ± 0.0094 |
 
 ---
 
-## 📂 Project Directory Structure
+## 📊 Dataset 
+
+The project is on credit card transaction fraud detection concepts.
+
+**Dataset** [Kaggle – Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|---|---|
+| Programming Language | Python 3.11 |
+| Machine Learning | LightGBM, Scikit-learn |
+| Backend Framework | FastAPI |
+| Data Processing | Pandas, NumPy |
+| Model Persistence | Joblib |
+| Experiment Tracking | MLflow |
+| Containerization | Docker |
+| Frontend | HTML, CSS, JavaScript |
+| Deployment | Render |
+| Testing | Pytest |
+| Version Control | Git, GitHub |
+
+---
+
+## 📂 Project Structure
 
 ```text
 Pred_creditcard/
-├── .github/workflows/
-│   └── ci.yml                     # GitHub Actions CI pipeline
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── model/
-│   ├── model.joblib               # Serialized LightGBM model
-│   ├── scaler.joblib              # Fitted StandardScaler
-│   ├── encoders.joblib            # LabelEncoders for all 12 categories
-│   └── feature_cols.joblib        # Exact feature ordering contract
+│   ├── model.joblib
+│   ├── scaler.joblib
+│   ├── encoders.joblib
+│   └── feature_cols.joblib
 ├── static/
-│   └── index.html                 # Modern responsive frontend UI
+│   └── index.html
 ├── tests/
-│   ├── conftest.py                # Pytest configuration
-│   └── test_app.py                # API test suite (6 comprehensive tests)
-├── app.py                         # FastAPI application & endpoints
-├── train.py                       # Training pipeline with MLflow tracking
-├── verify_app.py                  # Standalone verification script
-├── Dockerfile                     # Multi-stage production container
-├── requirements.txt               # Full development dependencies
-├── requirements-serve.txt         # Minimal lightweight serving requirements
-└── README.md                      # Project documentation
+│   ├── conftest.py
+│   └── test_app.py
+├── app.py
+├── train.py
+├── verify_app.py
+├── Dockerfile
+├── requirements.txt
+├── requirements-serve.txt
+└── README.md
+```
 
+---
 
-🚀 Quickstart & Local Setup
-1. Clone the Repository
-bash
+## 🚀 Local Setup
 
+### 1. Clone the Repository
 
+```bash
 git clone https://github.com/TechieManya/Pred_creditcard.git
 cd Pred_creditcard
-2. Create Virtual Environment & Install Dependencies
-bash
+```
 
+### 2. Create a Virtual Environment
 
+```bash
 python -m venv venv
-# Windows
+```
+
+Activate it:
+
+**Windows**
+```bash
 venv\Scripts\activate
-# macOS / Linux
+```
+
+**macOS / Linux**
+```bash
 source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-3. Run the Application Locally
-bash
+```
 
+### 4. Start the Application
 
+```bash
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
-Open http://localhost:8000
- in your browser.
+```
 
-🐳 Running with Docker
-1. Build the Docker Image
-bash
+Open http://localhost:8000 in your browser.
 
+---
 
+## 🐳 Docker Deployment
+
+### Build the Docker Image
+
+```bash
 docker build -t fraud-detection:latest .
-2. Start the Container
-bash
+```
 
+### Run the Container
 
+```bash
 docker run -d -p 8000:8000 --name fraud-api fraud-detection:latest
-3. Verify Health
-bash
+```
 
+### Check Application Health
 
+```bash
 curl http://localhost:8000/health
-🧪 Testing
-Run the automated test suite with pytest:
+```
 
-bash
+---
 
+## 🧪 Testing
 
+Run the automated test suite:
+
+```bash
 pytest tests/ -v
-Or run the offline verification script:
+```
 
-bash
+The test suite covers:
 
+- Health endpoint and model loading
+- Frontend availability
+- Fraud-risk classification behaviour
+- Invalid input validation
+- Numeric range validation
+- Prediction response structure
 
-python verify_app.py
-Test Coverage Summary
-test_health: Validates model loading and encoder integrity.
-test_ui_loads: Confirms UI availability.
-test_domain_logic_high_risk_beats_low_risk: Verifies that anomalous transactions receive higher risk probabilities than baseline transactions.
-test_invalid_input_returns_422: Confirms strict Pydantic validation rejects unknown categories with HTTP 422 JSON.
-test_out_of_range_numeric_returns_422: Rejects out-of-bounds parameters.
-test_prediction_structure: Validates output schema contract.
-🌐 API Reference
-1. Health Check
-http
+---
 
+## 🌐 API Reference
 
+### Health Check
+
+```http
 GET /health
-Response:
+```
 
-json
+### Transaction Risk Prediction
 
-
-{
-  "status": "healthy",
-  "model_loaded": true,
-  "supported_merchant_categories": [
-    "Crypto Exchange", "Electronics", "Fuel", "Gaming", "Gift Cards",
-    "Groceries", "Healthcare", "Online Retail", "Restaurants",
-    "Streaming", "Travel", "Utilities"
-  ]
-}
-2. Predict Transaction Risk
-http
-
-
+```http
 POST /predict
 Content-Type: application/json
-Sample Request:
+```
 
-json
+Example request:
 
-
+```json
 {
   "amount_usd": 35.00,
   "hours_since_last_txn": 24.0,
@@ -211,32 +273,28 @@ json
   "billing_shipping_mismatch": false,
   "is_ai_generated_scam_attempt": false
 }
-Sample Response:
+```
 
-json
+---
 
+## ☁️ Live Production Deployment
 
-{
-  "fraud_probability": 0.0111,
-  "is_fraud": false,
-  "risk_level": "LOW",
-  "tips": [
-    "✅ Low risk transaction. Standard processing recommended."
-  ]
-}
-☁️ Deployment Guide (Render)
-Sign in to Render.com
-.
-Click New + → Web Service.
-Connect your GitHub repository: TechieManya/Pred_creditcard.
-Configure service settings:
-Environment: Python 3
-Build Command: pip install -r requirements-serve.txt
-Start Command: uvicorn app:app --host 0.0.0.0 --port $PORT
-(Alternatively, select Docker as the environment and Render will automatically use your Dockerfile!)
-Click Create Web Service. Your app will be live at https://pred-creditcard.onrender.com.
-📜 Academic Attribution
-Project: Sentinel Risk Radar — Credit Card Fraud Detection Engine
-Course: B.Tech Machine Learning / Data Science Project
-Author: TechieManya
-License: MIT License
+The application is containerized using Docker and deployed on Render.
+
+**Live Website:** https://sentinel-risk-radar.onrender.com
+
+**Interactive API Documentation:** https://sentinel-risk-radar.onrender.com/docs
+
+---
+
+## 📜 Academic Attribution
+
+- **Project:** Sentinel Risk Radar — AI-Powered Credit Card Fraud Detection
+- **Domain:** Machine Learning and Financial Fraud Detection
+- **Algorithm:** LightGBM
+- **Author:** TechieManya
+- **License:** MIT
+
+---
+
+⭐ If you find this project interesting, feel free to explore the repository and its implementation.
