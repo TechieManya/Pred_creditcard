@@ -119,7 +119,8 @@ app = FastAPI(
     description="Predict transaction fraud probability – CSL236 End-Term Project",
     version="1.0.0",
 )
-app.mount("/static", StaticFiles(directory="static"), name="static")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 def preprocess_input(data: TransactionInput) -> pd.DataFrame:
