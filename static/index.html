@@ -256,6 +256,11 @@
             color: #f87171;
         }
 
+        .preset-btn.btn-medium:hover {
+            border-color: var(--risk-medium);
+            color: #fbbf24;
+        }
+
         /* Layout Grid */
         .dashboard-grid {
             display: grid;
@@ -916,7 +921,7 @@
                 <button type="button" class="preset-btn btn-fraud" onclick="loadPreset('fraud')">
                     🔴 High-Risk Anomaly (Fraud Alert)
                 </button>
-                <button type="button" class="preset-btn" onclick="loadPreset('night')">
+                <button type="button" class="preset-btn btn-medium" onclick="loadPreset('night')">
                     🟡 Suspicious Night Txn (Medium Risk)
                 </button>
                 <button type="button" class="preset-btn" onclick="resetForm()">
@@ -1486,29 +1491,29 @@
                 is_ai_generated_scam_attempt: true
             },
             night: {
-                amount_usd: 650.00,
-                merchant_category: 'Electronics',
-                merchant_risk_score: 60.0,
-                distance_from_home_km: 45.0,
+                amount_usd: 280.00,
+                merchant_category: 'Online Retail',
+                merchant_risk_score: 70.0,
+                distance_from_home_km: 35.0,
                 time_of_day_hour: 23,
                 day_of_week: 5,
-                hours_since_last_txn: 1.5,
-                txn_count_last_24h: 7,
+                hours_since_last_txn: 2.0,
+                txn_count_last_24h: 5,
                 card_type: 'Mastercard',
-                auth_method: 'PIN',
+                auth_method: 'OTP',
                 channel: 'Online',
                 device_type: 'Android Phone',
-                account_balance_usd: 1200.00,
-                customer_age: 29,
-                card_age_months: 14,
-                prior_disputes: 1,
-                velocity_score: 38.0,
-                cvv_retry_count: 1,
+                account_balance_usd: 2500.00,
+                customer_age: 32,
+                card_age_months: 18,
+                prior_disputes: 0,
+                velocity_score: 20.0,
+                cvv_retry_count: 0,
                 is_foreign_transaction: false,
                 is_new_merchant: true,
-                used_vpn: true,
+                used_vpn: false,
                 ip_country_mismatch: false,
-                billing_shipping_mismatch: true,
+                billing_shipping_mismatch: false,
                 is_ai_generated_scam_attempt: false
             }
         };
@@ -1527,6 +1532,9 @@
                     el.value = v;
                 }
             }
+            // Clear previous results/errors to refresh state for the newly loaded preset
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorBox').style.display = 'none';
         }
 
         function resetForm() {
