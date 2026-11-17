@@ -12,7 +12,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app import app
 
-client = TestClient(app)
+client = TestClient(app, raise_server_exceptions=True)
 
 # ── Sample valid input ─────────────────────────────────────────────────────────
 VALID_INPUT = {

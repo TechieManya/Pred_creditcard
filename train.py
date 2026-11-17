@@ -82,37 +82,110 @@ BOOLEAN_FEATURES = [
 TARGET = "is_fraud"
 
 
-def generate_synthetic_data(n_samples: int = 100) -> pd.DataFrame:
-    """Generate minimal synthetic dataset when data/train.csv is absent (e.g. on CI)."""
+def generate_synthetic_data(n_samples: int = 8000) -> pd.DataFrame:
+    """Generate domain-grounded synthetic dataset covering ALL frontend categories
+    and realistic fraud mechanics when data/train.csv is absent."""
     np.random.seed(42)
+    # ── ALL categories must match what the frontend offers exactly ─────────
+    MERCHANT_CATS = [
+        "Groceries", "Online Retail", "Utilities", "Electronics", "Healthcare",
+        "Restaurants", "Fuel", "Streaming", "Crypto Exchange", "Gaming",
+        "Travel", "Gift Cards",
+    ]
+    CARD_TYPES = ["Mastercard", "Visa", "Amex", "RuPay", "Discover"]
+    AUTH_METHODS = ["OTP", "PIN", "3D Secure", "Biometric", "No Authentication"]
+    CHANNELS = ["POS", "In-App", "Online", "ATM", "Contactless"]
+    DEVICE_TYPES = [
+        "iPhone", "Android Phone", "Tablet", "Windows PC",
+        "POS Terminal", "Mac", "ATM Machine", "Smart Watch",
+    ]
+
+    # Generate realistic distribution of transactions
+    amounts = np.concatenate([
+        np.random.exponential(scale=60, size=int(n_samples * 0.85)),
+        np.random.uniform(300, 4500, size=int(n_samples * 0.15))
+    ])
+    np.random.shuffle(amounts)
+    amounts = np.clip(amounts, 5, 5000)
+
+    hours_since = np.random.exponential(scale=18, size=n_samples)
+    hours_since = np.clip(hours_since, 0.1, 72)
+
+    txn_24h = np.random.poisson(lam=3, size=n_samples) + 1
+    txn_24h = np.clip(txn_24h, 1, 50)
+
+    dist = np.concatenate([
+        np.random.exponential(scale=15, size=int(n_samples * 0.85)),
+        np.random.uniform(100, 3000, size=int(n_samples * 0.15))
+    ])
+    np.random.shuffle(dist)
+    dist = np.clip(dist, 0.5, 5000)
+
     data = {
-        "amount_usd": np.random.uniform(5, 5000, n_samples),
-        "hours_since_last_txn": np.random.uniform(0.1, 72, n_samples),
-        "txn_count_last_24h": np.random.randint(1, 20, n_samples),
-        "distance_from_home_km": np.random.uniform(1, 500, n_samples),
+        "amount_usd": amounts,
+        "hours_since_last_txn": hours_since,
+        "txn_count_last_24h": txn_24h,
+        "distance_from_home_km": dist,
         "card_age_months": np.random.randint(1, 120, n_samples),
-        "customer_age": np.random.randint(18, 80, n_samples),
-        "account_balance_usd": np.random.uniform(100, 50000, n_samples),
-        "cvv_retry_count": np.random.randint(0, 4, n_samples),
-        "velocity_score": np.random.uniform(0, 10, n_samples),
+        "customer_age": np.random.randint(18, 75, n_samples),
+        "account_balance_usd": np.random.uniform(200, 25000, n_samples),
+        "cvv_retry_count": np.random.choice([0, 1, 2, 3, 4], size=n_samples, p=[0.85, 0.08, 0.04, 0.02, 0.01]),
+        "velocity_score": np.random.uniform(0, 100, n_samples),
         "time_of_day_hour": np.random.randint(0, 24, n_samples),
         "day_of_week": np.random.randint(0, 7, n_samples),
-        "merchant_risk_score": np.random.uniform(0, 1, n_samples),
-        "prior_disputes": np.random.randint(0, 3, n_samples),
-        "merchant_category": np.random.choice(["Groceries", "Online Retail", "Electronics"], n_samples),
-        "card_type": np.random.choice(["Visa", "Mastercard", "Amex"], n_samples),
-        "auth_method": np.random.choice(["OTP", "PIN", "3D Secure"], n_samples),
-        "channel": np.random.choice(["POS", "Online", "In-App"], n_samples),
-        "device_type": np.random.choice(["iPhone", "Android Phone", "Windows PC"], n_samples),
-        "is_foreign_transaction": np.random.choice([False, True], n_samples),
-        "is_new_merchant": np.random.choice([False, True], n_samples),
-        "used_vpn": np.random.choice([False, True], n_samples),
-        "ip_country_mismatch": np.random.choice([False, True], n_samples),
-        "billing_shipping_mismatch": np.random.choice([False, True], n_samples),
-        "is_ai_generated_scam_attempt": np.random.choice([False, True], n_samples),
-        "is_fraud": np.random.choice([0, 1], n_samples, p=[0.9, 0.1]),
+        "merchant_risk_score": np.random.uniform(5, 95, n_samples),
+        "prior_disputes": np.random.choice([0, 1, 2, 3], size=n_samples, p=[0.88, 0.08, 0.03, 0.01]),
+        "merchant_category": np.random.choice(MERCHANT_CATS, n_samples),
+        "card_type": np.random.choice(CARD_TYPES, n_samples),
+        "auth_method": np.random.choice(AUTH_METHODS, n_samples),
+        "channel": np.random.choice(CHANNELS, n_samples),
+        "device_type": np.random.choice(DEVICE_TYPES, n_samples),
+        "is_foreign_transaction": np.random.choice([False, True], size=n_samples, p=[0.88, 0.12]),
+        "is_new_merchant": np.random.choice([False, True], size=n_samples, p=[0.75, 0.25]),
+        "used_vpn": np.random.choice([False, True], size=n_samples, p=[0.88, 0.12]),
+        "ip_country_mismatch": np.random.choice([False, True], size=n_samples, p=[0.92, 0.08]),
+        "billing_shipping_mismatch": np.random.choice([False, True], size=n_samples, p=[0.92, 0.08]),
+        "is_ai_generated_scam_attempt": np.random.choice([False, True], size=n_samples, p=[0.96, 0.04]),
     }
-    return pd.DataFrame(data)
+    df = pd.DataFrame(data)
+
+    # ── Ensure every category appears at least once (guarantee full LabelEncoder) ─
+    for cat, vals in [
+        ("merchant_category", MERCHANT_CATS),
+        ("card_type", CARD_TYPES),
+        ("auth_method", AUTH_METHODS),
+        ("channel", CHANNELS),
+        ("device_type", DEVICE_TYPES),
+    ]:
+        for i, val in enumerate(vals):
+            df.loc[i, cat] = val
+
+    # ── Domain-grounded latent risk score (calibrated log-odds) ─────────────
+    is_night = (df["time_of_day_hour"] < 6) | (df["time_of_day_hour"] >= 22)
+    z = -5.5  # low base rate (~15-20%)
+    z += (df["merchant_risk_score"] / 100.0) * 1.8
+    z += (df["velocity_score"] / 100.0) * 1.5
+    z += df["cvv_retry_count"] * 0.5
+    z += np.log1p(df["distance_from_home_km"]) * 0.15
+    z += np.log1p(df["amount_usd"]) * 0.15
+    z += is_night.astype(int) * 0.7
+    z += df["is_foreign_transaction"].astype(int) * 1.0
+    z += df["used_vpn"].astype(int) * 0.6
+    z += df["ip_country_mismatch"].astype(int) * 1.2
+    z += df["billing_shipping_mismatch"].astype(int) * 1.2
+    z += df["is_ai_generated_scam_attempt"].astype(int) * 1.8
+    z += df["is_new_merchant"].astype(int) * 0.4
+    z += (df["auth_method"] == "No Authentication").astype(int) * 1.0
+    z -= (df["auth_method"] == "Biometric").astype(int) * 0.6
+    z -= (df["auth_method"] == "OTP").astype(int) * 0.3
+    z += (df["merchant_category"] == "Crypto Exchange").astype(int) * 1.2
+    z += (df["merchant_category"] == "Gift Cards").astype(int) * 0.8
+    z -= (df["merchant_category"] == "Groceries").astype(int) * 0.8
+    z -= (df["merchant_category"] == "Utilities").astype(int) * 0.8
+
+    probs = 1.0 / (1.0 + np.exp(-z))
+    df["is_fraud"] = (np.random.uniform(0, 1, n_samples) < probs).astype(int)
+    return df
 
 
 def load_and_preprocess(path: str, sample_size: int = None):
@@ -121,7 +194,7 @@ def load_and_preprocess(path: str, sample_size: int = None):
         df = pd.read_csv(path)
     else:
         print(f"Notice: '{path}' not found. Generating synthetic dataset for CI/pipeline...")
-        df = generate_synthetic_data(n_samples=sample_size or 100)
+        df = generate_synthetic_data(n_samples=sample_size or 8000)
     if sample_size and sample_size < len(df):
         df = df.sample(n=sample_size, random_state=42).reset_index(drop=True)
 
