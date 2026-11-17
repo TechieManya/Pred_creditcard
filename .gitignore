@@ -14,3 +14,5 @@ data/
 mlflow.db
 submission.csv
 .ipynb_checkpoints/
+
+.venv/
