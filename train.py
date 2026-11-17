@@ -188,13 +188,19 @@ def generate_synthetic_data(n_samples: int = 8000) -> pd.DataFrame:
     return df
 
 
-def load_and_preprocess(path: str, sample_size: int = None):
+def load_and_preprocess(path: str, sample_size: int = None, allow_synthetic: bool = False):
     """Load data, engineer features, encode categoricals, scale numerics."""
     if os.path.exists(path):
         df = pd.read_csv(path)
-    else:
-        print(f"Notice: '{path}' not found. Generating synthetic dataset for CI/pipeline...")
+    elif allow_synthetic:
+        print(f"[CI/TEST MODE] '{path}' not found. Generating synthetic dataset because --allow-synthetic was passed...")
         df = generate_synthetic_data(n_samples=sample_size or 8000)
+    else:
+        raise FileNotFoundError(
+            f"Dataset '{path}' not found! Automatic synthetic fallback is disabled to protect the "
+            f"trained Kaggle model from being overwritten. If running in CI or a test environment, "
+            f"pass --allow-synthetic explicitly."
+        )
     if sample_size and sample_size < len(df):
         df = df.sample(n=sample_size, random_state=42).reset_index(drop=True)
 
@@ -401,6 +407,12 @@ def main():
     parser.add_argument("--generate_submission", action="store_true", default=True, help="Generate submission.csv")
     parser.add_argument("--test_path", type=str, default=TEST_PATH)
     parser.add_argument("--submission_output", type=str, default="submission.csv")
+    parser.add_argument(
+        "--allow-synthetic",
+        action="store_true",
+        default=False,
+        help="Explicitly permit generating synthetic data when dataset is absent (for CI/testing only).",
+    )
     args = parser.parse_args()
 
     # ── MLflow setup ───────────────────────────────────────────────────────
@@ -412,7 +424,9 @@ def main():
 
     # ── Load data ──────────────────────────────────────────────────────────
     print("Loading and preprocessing data...")
-    X, y, scaler, encoders, feature_cols = load_and_preprocess(DATA_PATH, sample_size=args.sample_size)
+    X, y, scaler, encoders, feature_cols = load_and_preprocess(
+        DATA_PATH, sample_size=args.sample_size, allow_synthetic=args.allow_synthetic
+    )
     print(f"Features: {X.shape[1]}, Samples: {X.shape[0]}")
     print(f"Fraud rate: {y.mean()*100:.2f}%")
 

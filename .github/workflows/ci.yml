@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Train baseline model
-        run: python train.py --algorithm gradient_boosting --n_estimators 50 --max_depth 3
+      - name: Test training pipeline (CI synthetic test)
+        run: python train.py --algorithm lightgbm --n_estimators 50 --sample_size 1000 --allow-synthetic
 
       - name: Run tests
         run: pytest tests/ -v
